@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.4;
+pragma solidity 0.8.5;
 
 import "remix_tests.sol"; 
-import "remix_accounts.sol";
 import "../contracts/Reservation.sol";
 
 contract tests {

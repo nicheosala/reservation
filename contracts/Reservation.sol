@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.4;
+pragma solidity 0.8.5;
 
 // @title Apartment reservation.
 contract Reservation {
@@ -9,7 +9,6 @@ contract Reservation {
         uint cost;
     }
     
-    //ciao
     address payable constant empty_reserver = payable(address(0));
     
     Apartment public apartment; // immutable
