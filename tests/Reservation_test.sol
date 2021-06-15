@@ -8,19 +8,29 @@ contract tests {
 
     Reservation reservation;
     uint constant testCost = 100;
-    uint constant testStartDate = 1627776000;
+    uint constant testStartTimestamp = 1627776000;
+    uint constant testEndTimestamp = 1628416800;
     address testOwner;
     
     // Accept any incoming amount.
     receive () external payable {}
     
     function beforeAll() public {
-        reservation = new Reservation(testStartDate, testCost);
+        reservation = new Reservation(testStartTimestamp, testEndTimestamp, testCost, 2, 8);
     }
     
     function testConstructor() public {
         Assert.equal(reservation.reserver(), payable(address(0)),
         'The reserver should be empty.');
+    }
+    
+    function testBadConstructor() public {
+        try new Reservation(testEndTimestamp, testStartTimestamp, testCost, 2, 8) {
+            /* Nothing to do here: we expect an error. */
+        } catch Error(string memory reason) {
+            Assert.equal(reason, 'You cannot propose a reservation with start timestamp smaller than end timestamp.',
+            'Creating a reservation with a start timestamp smaller than the end timestamp should not be allowed.');
+        }
     }
 
     function testIsBooked() public {

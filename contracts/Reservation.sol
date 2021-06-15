@@ -5,8 +5,11 @@ pragma solidity 0.8.5;
 contract Reservation {
     
     struct Apartment {
-        uint startDate;
+        uint startTimestamp;
+        uint endTimestamp;
         uint cost;
+        uint8 bathrooms;
+        uint8 beds;
     }
     
     address payable constant empty_reserver = payable(address(0));
@@ -18,8 +21,10 @@ contract Reservation {
     event bookConfirmed(address by);
     event bookCancelled(address by);
 
-    constructor(uint _startDate, uint _cost) {
-        apartment = Apartment(_startDate, _cost);
+    constructor(uint _startTimestamp, uint _endTimestamp, uint _cost, uint8 _bathrooms, uint8 _beds) {
+        require(_startTimestamp > block.timestamp, 'You cannot propose a reservation in the past.');
+        require(_endTimestamp > _startTimestamp, 'You cannot propose a reservation with start timestamp smaller than end timestamp.');
+        apartment = Apartment(_startTimestamp, _endTimestamp, _cost, _bathrooms, _beds);
         owner = payable(msg.sender);
         reserver = empty_reserver;
     }
@@ -27,7 +32,7 @@ contract Reservation {
     function book() public payable {
         require(msg.value == apartment.cost, "The reserver should pay exactly the cost of the apartment.");
         require(!isBooked(), "The apartment is already booked.");
-        require(apartment.startDate > block.timestamp, "It's too late to book the apartment.");
+        require(apartment.startTimestamp > block.timestamp, "It's too late to book the apartment.");
 
         reserver = payable(msg.sender);
         
@@ -36,7 +41,7 @@ contract Reservation {
     
     function cancel() public {
         require(reserver == payable(msg.sender), "The apartment is not booked by you.");
-        require(apartment.startDate > block.timestamp, "It's too late to cancel the reservation.");
+        require(apartment.startTimestamp > block.timestamp, "It's too late to cancel the reservation.");
         
         if (reserver.send(address(this).balance)) {
             reserver = empty_reserver;
@@ -49,7 +54,7 @@ contract Reservation {
     }
     
     function withdraw() public {
-        require(block.timestamp > apartment.startDate, 'The owner cannot withdraw before the reserver reach the apartment.');
+        require(block.timestamp > apartment.startTimestamp, 'The owner cannot withdraw before the reserver reach the apartment.');
         require(msg.sender == owner, 'Only the owner can withdraw the payment for the apartment.');
         
         selfdestruct(owner);
