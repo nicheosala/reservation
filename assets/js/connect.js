@@ -207,9 +207,13 @@ function newButton(_innerHTML, _onClickEvent) {
 }
 
 function book() {
-    contract.methods.book().send({from: MY_ADDRESS, value: apartment['cost']});
+    contract.methods.book().send({from: MY_ADDRESS, value: apartment['cost']}).then(refresh);
 }
 
 function cancel() {
-    contract.methods.cancel().send({from: MY_ADDRESS});
+    contract.methods.cancel().send({from: MY_ADDRESS}).then(refresh);
+}
+
+function refresh() {
+    location = location; // A way to refresh the webpage.
 }
