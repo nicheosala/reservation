@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.5;
 
-// @title Apartment reservation.
+/* @title Apartment reservation
+ * This contract allows to make a reservation for an apartment.
+ */
 contract Reservation {
     
     struct Apartment {
