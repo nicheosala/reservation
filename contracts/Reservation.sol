@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.5;
 
+import "./ReentrancyGuard.sol";
+
 /* @title Apartment reservation
  * This contract allows to make a reservation for an apartment.
  */
-contract Reservation {
+contract Reservation is ReentrancyGuard {
     
     struct Apartment {
         uint startTimestamp;
@@ -55,7 +57,7 @@ contract Reservation {
         return reserver != EMPTY_RESERVER;
     }
     
-    function book() public payable {
+    function book() external payable nonReentrant {
         require(msg.value == apartment.cost, "The reserver should pay exactly the cost of the apartment.");
         require(!isBooked(), "The apartment is already booked.");
         require(apartment.startTimestamp > block.timestamp, "It's too late to book the apartment.");
@@ -65,7 +67,7 @@ contract Reservation {
         emit bookConfirmed(reserver);
     }
     
-    function cancel() public onlyReserver onlyBeforeStart {
+    function cancel() external onlyReserver onlyBeforeStart nonReentrant {
 
         address payable tmp_reserver = reserver;
         reserver = EMPTY_RESERVER;
@@ -75,13 +77,13 @@ contract Reservation {
         emit bookCancelled(reserver);
     }
     
-    function withdraw() public onlyOwner onlyAfterStart {
+    function withdraw() external onlyOwner onlyAfterStart nonReentrant {
         selfdestruct(owner);
     }
     
-    function destruct() public onlyOwner onlyBeforeStart {
+    function destruct() external onlyOwner onlyBeforeStart nonReentrant {
 
-        if (reserver != EMPTY_RESERVER) {
+        if (block.timestamp < apartment.startTimestamp && reserver != EMPTY_RESERVER) {
             reserver.transfer(apartment.cost);
         }
         
