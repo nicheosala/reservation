@@ -83,7 +83,7 @@ contract Reservation is ReentrancyGuard {
     
     function destruct() external onlyOwner onlyBeforeStart nonReentrant {
 
-        if (block.timestamp < apartment.startTimestamp && reserver != EMPTY_RESERVER) {
+        if (reserver != EMPTY_RESERVER) {
             reserver.transfer(apartment.cost);
         }
         
