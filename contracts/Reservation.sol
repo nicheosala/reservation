@@ -12,7 +12,7 @@ contract Reservation {
         uint8 beds;
     }
     
-    address payable constant empty_reserver = payable(address(0));
+    address payable constant EMPTY_RESERVER = payable(address(0));
     
     Apartment public apartment; // immutable
     address payable public immutable owner;
@@ -20,13 +20,37 @@ contract Reservation {
     
     event bookConfirmed(address by);
     event bookCancelled(address by);
+    
+    modifier onlyOwner() {
+        require(payable(msg.sender) == owner, 'Only the owner can perform this operation.');
+        _;
+    }
+    
+    modifier onlyReserver() {
+        require(payable(msg.sender) == reserver, 'Only the actual reserver can perform this operation.');
+        _;
+    }
+    
+    modifier onlyAfterStart() {
+        require(block.timestamp > apartment.startTimestamp, 'This operation can be done only after startTimestamp');
+        _;
+    }
+    
+    modifier onlyBeforeStart() {
+        require(block.timestamp < apartment.startTimestamp, 'This operation can be done only before startTimestamp');
+        _;
+    }
 
     constructor(uint _startTimestamp, uint _endTimestamp, uint _cost, uint8 _bathrooms, uint8 _beds) {
-        require(_startTimestamp > block.timestamp, 'You cannot propose a reservation in the past.');
+        require(block.timestamp < _startTimestamp);
         require(_endTimestamp > _startTimestamp, 'You cannot propose a reservation with start timestamp smaller than end timestamp.');
         apartment = Apartment(_startTimestamp, _endTimestamp, _cost, _bathrooms, _beds);
         owner = payable(msg.sender);
-        reserver = empty_reserver;
+        reserver = EMPTY_RESERVER;
+    }
+    
+    function isBooked() public view returns (bool) {
+        return reserver != EMPTY_RESERVER;
     }
     
     function book() public payable {
@@ -39,32 +63,24 @@ contract Reservation {
         emit bookConfirmed(reserver);
     }
     
-    function cancel() public {
-        require(reserver == payable(msg.sender), "The apartment is not booked by you.");
-        require(apartment.startTimestamp > block.timestamp, "It's too late to cancel the reservation.");
+    function cancel() public onlyReserver onlyBeforeStart {
+
+        address payable tmp_reserver = reserver;
+        reserver = EMPTY_RESERVER;
         
-        if (reserver.send(address(this).balance)) {
-            reserver = empty_reserver;
-            emit bookCancelled(reserver);
-        } else revert();
+        tmp_reserver.transfer(apartment.cost);
+        
+        emit bookCancelled(reserver);
     }
     
-    function isBooked() public view returns (bool) {
-        return reserver != empty_reserver;
-    }
-    
-    function withdraw() public {
-        require(block.timestamp > apartment.startTimestamp, 'The owner cannot withdraw before the reserver reach the apartment.');
-        require(msg.sender == owner, 'Only the owner can withdraw the payment for the apartment.');
-        
+    function withdraw() public onlyOwner onlyAfterStart {
         selfdestruct(owner);
     }
     
-    function destruct() public {
-        require(msg.sender == owner);
-        
-        if (reserver != payable(address(0))) {
-            reserver.transfer(address(this).balance);
+    function destruct() public onlyOwner onlyBeforeStart {
+
+        if (reserver != EMPTY_RESERVER) {
+            reserver.transfer(apartment.cost);
         }
         
         selfdestruct(owner);
