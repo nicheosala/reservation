@@ -74,7 +74,7 @@ contract Reservation is ReentrancyGuard {
         
         tmp_reserver.transfer(apartment.cost);
         
-        emit bookCancelled(reserver);
+        emit bookCancelled(tmp_reserver);
     }
     
     function withdraw() external onlyOwner onlyAfterStart nonReentrant {
