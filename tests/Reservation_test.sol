@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.5;
+pragma solidity 0.8.6;
 
 import "remix_tests.sol"; 
 import "../contracts/Reservation.sol";
@@ -10,7 +10,6 @@ contract tests {
     uint constant testCost = 100;
     uint constant testStartTimestamp = 1627776000;
     uint constant testEndTimestamp = 1628416800;
-    address testOwner;
     
     // Accept any incoming amount.
     receive () external payable {}

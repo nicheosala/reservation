@@ -1,5 +1,5 @@
 const ABI = [{"inputs":[{"internalType":"uint256","name":"_startTimestamp","type":"uint256"},{"internalType":"uint256","name":"_endTimestamp","type":"uint256"},{"internalType":"uint256","name":"_cost","type":"uint256"},{"internalType":"uint8","name":"_bathrooms","type":"uint8"},{"internalType":"uint8","name":"_beds","type":"uint8"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"by","type":"address"}],"name":"bookCancelled","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"by","type":"address"}],"name":"bookConfirmed","type":"event"},{"inputs":[],"name":"apartment","outputs":[{"internalType":"uint256","name":"startTimestamp","type":"uint256"},{"internalType":"uint256","name":"endTimestamp","type":"uint256"},{"internalType":"uint256","name":"cost","type":"uint256"},{"internalType":"uint8","name":"bathrooms","type":"uint8"},{"internalType":"uint8","name":"beds","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"book","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"cancel","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"destruct","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"isBooked","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"reserver","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-const ADDRESS = '0x0b6a2187e39d3Fa02515f1efDc96d1Aa1F605f80';
+const ADDRESS = '0xe87028f0d8d43a32e00060daBD2a31e9EE321550';
 
 await window.ethereum.request({method: 'eth_requestAccounts'});
 const web3 = new Web3(window.ethereum);
@@ -59,3 +59,6 @@ function cancel() {
 function refresh() {
     location = location; // A way to refresh the webpage.
 }
+
+// const balance = await web3.eth.getBalance(ADDRESS);
+// alert(balance);
